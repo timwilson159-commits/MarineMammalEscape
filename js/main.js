@@ -780,5 +780,7 @@
     state,
     solveAll() { ER.puzzles.forEach((p) => { if (!state.solved.includes(p.id)) state.solved.push(p.id); }); renderNotes(); },
     open: openScene,
+    player,
+    step(seconds) { for (let t = 0; t < seconds; t += 0.02) update(0.02); },
   };
 })();
