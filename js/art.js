@@ -40,6 +40,26 @@
       <ellipse cx="79" cy="25" rx="4" ry="3" fill="#1b1b3a"/>
       <circle cx="79" cy="25" r="1.2" fill="#fff"/>
       <path d="M85,30 Q89,31 90,29" stroke="#1b1b3a" stroke-width="2" fill="none"/>`),
+    leopardSeal: svg(`
+      <path d="M9,30 L1,21 Q5,30 1,39 Z" fill="#6f7a86"/>
+      <path d="M6,30 C14,21 40,17 62,19 C76,20 88,21 95,26 C99,30 96,34 90,35 C78,38 60,38 40,37 C24,36 12,35 6,30 Z" fill="#9aa5b1"/>
+      <path d="M30,34 C45,38 70,38 90,35 C70,40 45,40 30,34 Z" fill="#d8dde3"/>
+      <path d="M58,35 Q55,45 46,47 Q52,40 51,34 Z" fill="#6f7a86"/>
+      <circle cx="40" cy="25" r="1.6" fill="#4e5864"/><circle cx="50" cy="23" r="1.4" fill="#4e5864"/><circle cx="28" cy="28" r="1.3" fill="#4e5864"/><circle cx="62" cy="24" r="1.5" fill="#4e5864"/><circle cx="34" cy="31" r="1.2" fill="#4e5864"/>
+      <circle cx="86" cy="25" r="1.8" fill="#1b1b3a"/>
+      <path d="M89,31 Q94,32 96,30" stroke="#1b1b3a" stroke-width="1.2" fill="none"/>`),
+    seaOtter: svg(`
+      <path d="M0,40 Q25,35 50,40 T100,40" stroke="#5cc8f2" stroke-width="2.5" fill="none"/>
+      <path d="M4,34 C8,30 13,30 16,33 C12,36 7,36 4,34 Z" fill="#6e4529"/>
+      <path d="M12,34 C20,27 32,25 46,26 L68,26 C78,26 84,28 86,32 C82,37 70,38 50,38 C32,38 18,38 12,34 Z" fill="#8a5a3b"/>
+      <path d="M40,31 C50,34 64,34 76,31" stroke="#b98a66" stroke-width="3" fill="none"/>
+      <circle cx="83" cy="24" r="9.5" fill="#c49a76"/>
+      <circle cx="77" cy="16" r="2.6" fill="#8a5a3b"/><circle cx="89" cy="16" r="2.6" fill="#8a5a3b"/>
+      <circle cx="80" cy="23" r="1.4" fill="#1b1b3a"/><circle cx="87" cy="23" r="1.4" fill="#1b1b3a"/>
+      <ellipse cx="83.5" cy="27" rx="2" ry="1.4" fill="#1b1b3a"/>
+      <circle cx="58" cy="22" r="5" fill="#7b4fa3"/>
+      <path d="M58,15 V29 M51,22 H65 M53,17 L63,27 M63,17 L53,27" stroke="#5a3582" stroke-width="1"/>
+      <ellipse cx="52" cy="25" rx="3" ry="2" fill="#6e4529"/><ellipse cx="64" cy="25" rx="3" ry="2" fill="#6e4529"/>`),
   };
 
   // Cartoon dolphin facing right. face = 1 (right) or -1 (left)

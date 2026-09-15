@@ -9,12 +9,12 @@ ER.register({
   printable: false,
   fact: 'Marine mammals breathe air with lungs, just like us. When a dolphin, dugong or whale gets caught in a fishing net (called bycatch) it cannot reach the surface, so it can drown. Lost "ghost nets" keep trapping animals for years.',
   hints: [
-    'Watch the AIR bar. When it gets low, swim right up to the surface (the top of the water) to breathe. Staying at the surface fills it back up.',
-    'Take a big breath whenever there is a gap above you, then dive under the hanging nets. Never surface under a boat. If you see a net hanging from the top, go low early.',
+    'Watch the AIR bar. Swim up to the surface to take a breath. Each breath refills some air, then your dolphin dips back under by itself, so plan your breaths for the gaps between nets and boats.',
+    'Breathe whenever there is a clear gap above you, then stay deep until the next gap. Never surface under a boat. When a net hangs from the top, go low early, and watch for nets rising from the sea floor too.',
   ],
   build(body, api) {
     const { el, sfx } = ER;
-    const W = 800, H = 450, SURF = 90, FLOOR = 420, GOAL = 45, DX = 170;
+    const W = 800, H = 450, SURF = 90, FLOOR = 420, GOAL = 90, DX = 170;
 
     const canvas = el('canvas', { width: W, height: H, class: 'game-canvas' });
     const overlay = el('div', { class: 'game-overlay' });
@@ -22,7 +22,7 @@ ER.register({
       el('div', { class: 'card game-info' },
         el('p', {}, '🐬 Dolphins are mammals, so they must come to the ', el('b', {}, 'surface to breathe air'),
           '. Guide your dolphin to safe waters. Move with the ', el('b', {}, 'mouse'), ' or ', el('kbd', {}, '↑'), ' ', el('kbd', {}, '↓'),
-          '. Dodge ghost nets and boats, and keep your ', el('b', {}, 'AIR'), ' bar up!')),
+          '. Dodge ghost nets and boats, and keep your ', el('b', {}, 'AIR'), ' bar up. Each time you surface you take ', el('b', {}, 'one breath'), ' and then dip back under.')),
       el('div', { class: 'game-wrap' }, canvas, overlay));
 
     const ctx = canvas.getContext('2d');
@@ -33,7 +33,7 @@ ER.register({
     function reset() {
       g = {
         y: 200, vy: 0, ty: null, air: 100, lives: 3, inv: 0, dist: 0,
-        obs: [], spawn: 1.2, running: false, pops: [], breathing: false, lowWarned: false,
+        obs: [], spawn: 1.2, running: false, pops: [], lowWarned: false, dive: 0, surfCool: 0,
         scroll: 0, bubbles: [],
       };
     }
@@ -43,7 +43,7 @@ ER.register({
       overlay.hidden = false;
       const card = (emoji, title, text, btn) => overlay.append(el('div', { class: 'overlay-card' + (kind === 'win' ? ' win' : '') },
         el('div', { class: 'overlay-emoji' }, emoji), el('h3', {}, title), ...text.map((t) => el('p', {}, t)), btn));
-      if (kind === 'start') card('🐬💨', 'Bycatch Escape', ['Mouse or ↑ ↓ to swim.', 'Swim to the surface to refill your AIR.', 'Avoid nets 🥅 and boats 🚤. Reach safe waters!'],
+      if (kind === 'start') card('🐬💨', 'Bycatch Escape', ['Mouse or ↑ ↓ to swim.', 'Surface to breathe: one breath, then you dip back down.', 'Avoid nets 🥅 and boats 🚤. Reach safe waters!'],
         el('button', { class: 'btn btn-sun btn-big', onclick: start }, '▶ Start swimming'));
       else if (kind === 'lose') card('🥅', 'Tangled!', [g.lastHit === 'air' ? 'Your dolphin ran out of air.' : 'Your dolphin got caught.', 'Every year thousands of dolphins, dugongs and whales drown in nets. Try again!'],
         el('button', { class: 'btn btn-sun btn-big', onclick: start }, '🔁 Try again'));
@@ -67,10 +67,16 @@ ER.register({
     function spawnObstacle() {
       const r = Math.random();
       const x = W + 60;
-      if (r < 0.34) g.obs.push({ type: 'net', x, w: 46, top: SURF - 8, bottom: SURF + rand(110, 210) });
-      else if (r < 0.58) g.obs.push({ type: 'floor', x, w: 46, top: FLOOR - rand(110, 190), bottom: FLOOR });
-      else if (r < 0.78) g.obs.push({ type: 'boat', x, w: 130 });
-      else g.obs.push({ type: 'drift', x, cy: rand(SURF + 90, FLOOR - 70), r: 30, t: rand(0, 6) });
+      if (r < 0.28) g.obs.push({ type: 'net', x, w: 46, top: SURF - 8, bottom: SURF + rand(110, 210) });
+      else if (r < 0.46) g.obs.push({ type: 'floor', x, w: 46, top: FLOOR - rand(110, 190), bottom: FLOOR });
+      else if (r < 0.64) g.obs.push({ type: 'boat', x, w: 130 });
+      else if (r < 0.82) g.obs.push({ type: 'drift', x, cy: rand(SURF + 90, FLOOR - 70), r: 30, t: rand(0, 6) });
+      else {
+        // a hanging net and a floor net together: squeeze through the gap in the middle
+        const netBottom = SURF + rand(80, 140);
+        g.obs.push({ type: 'net', x, w: 46, top: SURF - 8, bottom: netBottom });
+        g.obs.push({ type: 'floor', x, w: 46, top: netBottom + rand(115, 150), bottom: FLOOR });
+      }
     }
 
     function hit(kind) {
@@ -88,29 +94,33 @@ ER.register({
       let ky = 0;
       if (keys.down('arrowup', 'w')) ky -= 1;
       if (keys.down('arrowdown', 's')) ky += 1;
-      if (ky) { g.vy = ky * 240; g.ty = null; }
+      g.dive = Math.max(0, g.dive - dt);
+      g.surfCool = Math.max(0, g.surfCool - dt);
+      if (g.dive > 0) g.vy = 230;
+      else if (ky) { g.vy = ky * 240; g.ty = null; }
       else if (g.ty != null) g.vy = Math.max(-260, Math.min(260, (g.ty - g.y) * 6));
       else g.vy *= 0.85;
       g.y = Math.max(SURF - 14, Math.min(FLOOR - 16, g.y + g.vy * dt));
 
-      const speed = 170 + g.dist * 1.2;
+      const speed = 170 + g.dist * 0.9;
       g.dist += dt;
       g.scroll += speed * dt;
       g.inv = Math.max(0, g.inv - dt);
 
-      // breathing
-      const atSurface = g.y < SURF + 14;
-      if (atSurface) {
-        if (!g.breathing) { sfx.breath(); g.pops.push({ x: DX + 10, y: SURF - 30, text: '💨 Breathe!', life: 0.9, color: '#ffffff' }); }
-        g.breathing = true;
-        g.air = Math.min(100, g.air + 70 * dt);
-        g.lowWarned = false;
-      } else {
-        g.breathing = false;
-        g.air -= 10.5 * dt;
-        if (g.air < 30 && !g.lowWarned) { g.lowWarned = true; sfx.bad(); }
-        if (g.air <= 0) hit('air');
+      // breathing: one breath per surfacing, then the dolphin automatically dips back under
+      if (g.y < SURF + 4 && g.dive <= 0) {
+        if (g.surfCool <= 0) {
+          sfx.breath();
+          g.pops.push({ x: DX + 10, y: SURF - 30, text: '💨 Breathe!', life: 0.9, color: '#ffffff' });
+          g.air = Math.min(100, g.air + 50);
+          g.surfCool = 1.6;
+          g.lowWarned = false;
+        }
+        g.dive = 0.55;
       }
+      g.air -= 9 * dt;
+      if (g.air < 30 && !g.lowWarned) { g.lowWarned = true; sfx.bad(); }
+      if (g.air <= 0) hit('air');
 
       g.spawn -= dt;
       if (g.spawn <= 0) {

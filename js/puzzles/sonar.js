@@ -10,7 +10,7 @@ ER.register({
   fact: 'Toothed whales like dolphins, orcas and sperm whales make fast clicking sounds and listen for the echoes. This lets them "see" with sound in dark or murky water. It is called echolocation. Baleen whales, like humpbacks, do not echolocate.',
   hints: [
     'Click the water (or press Space) to send a sonar click. Anything the sound wave touches glows for a moment. GREEN glowing shapes are fish. RED shapes are plastic bags.',
-    'Click, spot the closest green fish, then swim straight to it before the glow fades. Steer around red plastic: touching it costs you 5 seconds of energy.',
+    'Click, spot the closest green fish, then swim to it before the glow fades. Avoid red plastic (-5 seconds). In the lab report, follow the sound: made in the head, focused, out to the fish, back into the jaw, then to the brain. For the maths, the sound goes there AND back, so halve the total distance.',
   ],
   build(body, api) {
     const { el, sfx } = ER;
@@ -78,8 +78,86 @@ ER.register({
           el('div', { class: 'overlay-emoji' }, '🏆'),
           el('h3', {}, 'Full belly!'),
           el('p', {}, 'You used echolocation to catch ' + GOAL + ' fish in the dark.'),
-          el('button', { class: 'btn btn-light', onclick: start }, '🔁 Play again')));
+          el('p', {}, el('b', {}, 'Now finish the Echolocation Lab Report below to unlock your code.')),
+          el('div', { class: 'row-center' },
+            el('button', { class: 'btn btn-sun', onclick: () => report && report.scrollIntoView({ behavior: 'smooth', block: 'start' }) }, '📝 Go to lab report'),
+            el('button', { class: 'btn btn-light', onclick: start }, '🔁 Play again'))));
       }
+    }
+
+    // After the game: explain how echolocation works, then check understanding.
+    let report = null;
+    function showReport() {
+      if (report) return;
+      const diagram = `
+        <svg viewBox="0 0 800 280" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Diagram of a dolphin using echolocation to find a fish">
+          <rect width="800" height="280" fill="#0b3b7a"/>
+          <path d="M90,160 L40,125 Q58,160 40,195 Z" fill="#7fb8e6"/>
+          <path d="M80,160 C130,110 260,98 330,118 C360,126 385,138 410,152 C395,160 370,166 335,168 C265,190 140,192 80,168 Z" fill="#7fb8e6"/>
+          <path d="M205,112 C212,80 232,70 250,68 C240,86 240,100 246,116 Z" fill="#7fb8e6"/>
+          <path d="M160,180 C230,188 300,180 360,166 C300,190 220,196 160,180 Z" fill="#e6f4ff"/>
+          <path d="M250,176 Q238,204 222,210 Q232,192 234,176 Z" fill="#5b93c4"/>
+          <ellipse cx="350" cy="134" rx="30" ry="17" fill="#ffd23f" opacity="0.9"/>
+          <path d="M300,168 C335,168 375,162 408,152" stroke="#ff7b39" stroke-width="7" fill="none" stroke-linecap="round"/>
+          <circle cx="288" cy="150" r="7" fill="#c7a8ff" stroke="#10204a" stroke-width="2"/>
+          <circle cx="316" cy="114" r="6" fill="#ff5d73" stroke="#10204a" stroke-width="2"/>
+          <ellipse cx="298" cy="104" rx="7" ry="2.5" fill="#10204a"/>
+          <circle cx="380" cy="141" r="3" fill="#10204a"/>
+          <g stroke="#7fe7ff" stroke-width="4" fill="none" stroke-linecap="round">
+            <path d="M430,120 Q448,145 430,170"/><path d="M470,110 Q494,145 470,180"/><path d="M510,100 Q540,145 510,190"/>
+          </g>
+          <g transform="translate(700,145)">
+            <ellipse cx="0" cy="0" rx="30" ry="15" fill="#4dffa6"/><path d="M-24,0 L-48,-16 L-48,16 Z" fill="#4dffa6"/><circle cx="16" cy="-4" r="3" fill="#0b3b7a"/>
+          </g>
+          <g stroke="#4dffa6" stroke-width="3" fill="none" stroke-dasharray="7 6" stroke-linecap="round">
+            <path d="M660,178 Q640,200 660,222"/><path d="M610,182 Q586,206 610,230"/><path d="M560,186 Q532,210 560,234"/>
+          </g>
+          <g font-family="Fredoka, sans-serif" font-size="17" font-weight="600" fill="#ffffff">
+            <line x1="316" y1="107" x2="300" y2="50" stroke="#fff" stroke-width="2"/><text x="300" y="40" text-anchor="middle">Phonic lips: make clicks</text>
+            <line x1="365" y1="122" x2="470" y2="74" stroke="#fff" stroke-width="2"/><text x="474" y="70">Melon: focuses clicks into a beam</text>
+            <text x="470" y="215" text-anchor="middle" fill="#7fe7ff">Clicks travel out</text>
+            <text x="700" y="118" text-anchor="middle" fill="#4dffa6">Fish</text>
+            <text x="640" y="262" text-anchor="middle" fill="#4dffa6">Echoes bounce back</text>
+            <line x1="392" y1="158" x2="420" y2="238" stroke="#fff" stroke-width="2"/><text x="300" y="256">Lower jaw: picks up echoes</text>
+            <line x1="286" y1="157" x2="200" y2="234" stroke="#fff" stroke-width="2"/><text x="190" y="256" text-anchor="middle">Inner ear → brain</text>
+          </g>
+        </svg>`;
+      const quizHost = el('div');
+      const task = ER.matchTask({
+        layout: 'list',
+        checkText: '✔ Check the order',
+        slots: ['a', 'b', 'c', 'd', 'e'].map((id, i) => ({ label: `Step ${i + 1}`, accept: id })),
+        cards: [
+          { id: 'a', content: 'The dolphin pushes air past its phonic lips, near the blowhole, to make clicks.' },
+          { id: 'b', content: 'The melon, a fatty lump in the forehead, focuses the clicks into a beam.' },
+          { id: 'c', content: 'The clicks travel through the water and bounce off a fish.' },
+          { id: 'd', content: 'The echoes come back and are picked up by fat in the dolphin\'s lower jaw.' },
+          { id: 'e', content: 'The sound reaches the inner ear, and the brain works out the fish\'s size, distance and direction.' },
+        ],
+        onSolved: () => {
+          quizHost.append(ER.quizSeq([
+            { q: '⏱️ The dolphin hears two echoes. One comes back very fast and one comes back slowly. Which fish is CLOSER?',
+              opts: ['The fish with the fast echo', 'The fish with the slow echo', 'They are the same distance away'], a: 'The fish with the fast echo',
+              why: 'A closer fish means the sound has a shorter trip there and back.' },
+            { q: '🧮 Sound travels about 1500 metres every second in water. An echo takes 0.2 seconds to come back. How far away is the fish? (Remember: the sound travels there AND back!)',
+              opts: ['150 m', '300 m', '1500 m', '30 m'], a: '150 m',
+              why: '1500 × 0.2 = 300 m is the whole trip there and back. Halve it to find the distance to the fish.' },
+            { q: '🐋 Which of these animals can NOT echolocate?',
+              opts: ['Humpback whale', 'Bottlenose dolphin', 'Orca', 'Sperm whale'], a: 'Humpback whale',
+              why: 'Only toothed whales echolocate. Which one of these is a baleen whale?' },
+          ], () => api.solve(), '🧠 Lab question'));
+          setTimeout(() => quizHost.scrollIntoView({ behavior: 'smooth', block: 'center' }), 300);
+        },
+      });
+      report = el('div', { class: 'card report-card' },
+        el('h3', {}, '📝 Echolocation Lab Report'),
+        el('p', {}, 'Great hunting! Now show you understand ', el('b', {}, 'how'), ' echolocation works. Study the diagram, then put the 5 steps in order.'),
+        el('div', { class: 'echo-diagram', html: diagram }),
+        el('h4', { style: { marginTop: '14px' } }, '🔢 Put the steps in order'),
+        task,
+        quizHost);
+      body.append(report);
+      setTimeout(() => report.scrollIntoView({ behavior: 'smooth', block: 'start' }), 1200);
     }
 
     function start() {
@@ -188,7 +266,7 @@ ER.register({
       if (g.caught >= GOAL) {
         g.running = false;
         showOverlay('win');
-        api.solve();
+        showReport();
       } else if (g.time <= 0) {
         g.time = 0;
         g.running = false;
@@ -313,6 +391,7 @@ ER.register({
       raf = requestAnimationFrame(loop);
     }
 
+    if (ER._debug) ER._debug.sonarReport = showReport;
     reset();
     showOverlay('start');
     raf = requestAnimationFrame(loop);

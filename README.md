@@ -17,14 +17,14 @@ Open `index.html` in a browser, or host it on GitHub Pages (below). It needs no 
 
 | Station | Type | Science focus |
 |---|---|---|
-| 📡 Sonar Hunt | Arcade game | Echolocation in toothed whales |
+| 📡 Sonar Hunt | Arcade game + lab report | How echolocation works (diagram, step order, echo distance maths) |
 | 🥅 Bycatch Escape | Arcade game | Air breathing, ghost nets, boat strike |
-| 🦴 Flipper Bones | Drag & drop | Homologous structures, whale evolution |
+| 🦴 Flipper Bones | 4-stage drag & drop | Homologous, analogous and vestigial structures, whale evolution |
 | 🕸️ Food Web Builder | Drag & drop | Energy flow, seagrass loss and dugongs |
-| 🖼️ Picture Puzzles | Pencil & paper | Marine mammal vocabulary (rebus) |
+| 🖼️ Picture Puzzles | Pencil & paper | Marine mammal vocabulary (10 rebuses) |
 | 🎶 Whale Song Code | Pencil & paper | Whale communication, ocean noise |
-| 🧩 Who Am I? Logic Grid | Pencil & paper | Diet, habitat and threats of 4 species |
-| 📉 Vaquita Countdown | Pencil & paper | Reading population data, conservation |
+| 🧩 Who Am I? Logic Grid | Pencil & paper | Diet, habitat and threats of 6 species |
+| 📉 Vaquita Countdown | Pencil & paper | Reading population data (7 questions), conservation |
 | 🚪 Escape Hatch | Pencil & paper | Vigenère cypher (key: CETACEAN) |
 
 Every station has two tiered hints and sound effects (with a mute button). The paper puzzles and the hatch also have a **🖨️ Print sheet** button.

@@ -10,7 +10,7 @@ ER.register({
   fact: 'The vaquita is the world\'s rarest marine mammal: only about 10 are left. Mexico has banned gillnets in the vaquita\'s home, and scientists say the species can still recover if the nets are kept out of the water.',
   hints: [
     'The number on top of each bar is how many vaquitas scientists estimated that year. "Fell below 100" means the first bar with a number SMALLER than 100.',
-    'To find how many were lost, take the LATER number away from the EARLIER number. Question 2 is 567 − 245. Question 3 is 30 − 19. The answer to question 4 is in the yellow info box.',
+    'To find how many were lost, take the LATER number away from the EARLIER number (question 2 is 567 − 245). For "most disappeared", work out the drop between each pair of surveys and pick the biggest. Half of 59 is about 30. The fish answer is in the yellow info box.',
   ],
   build(body, api) {
     const { el, sfx } = ER;
@@ -50,6 +50,9 @@ ER.register({
       { q: 'In which year did the number of vaquitas first fall below 100?', a: '2013', type: 'num', ph: 'year' },
       { q: 'How many vaquitas were lost between 1997 and 2008?', a: '322', type: 'num', ph: 'number' },
       { q: 'How many vaquitas were lost between 2016 and 2018?', a: '11', type: 'num', ph: 'number' },
+      { q: 'How many vaquitas were lost altogether between 1997 and 2023?', a: '557', type: 'num', ph: 'number' },
+      { q: 'Between which two surveys in a row did the MOST vaquitas disappear?', a: '1997 to 2008', type: 'sel', opts: ['1997 to 2008', '2008 to 2013', '2013 to 2015', '2015 to 2016'] },
+      { q: 'From 2015 to 2016, about how much of the vaquita population was lost?', a: 'About half', type: 'sel', opts: ['About a quarter', 'About half', 'About three quarters', 'Almost all of it'] },
       { q: 'Illegal gillnets are set to catch which fish?', a: 'Totoaba', type: 'sel', opts: ['Tuna', 'Totoaba', 'Salmon', 'Sardine'] },
     ];
     const inputs = Q.map((q) => {
@@ -89,7 +92,7 @@ ER.register({
       } else {
         sfx.bad();
         ER.shake(lock);
-        ER.say(fb, `${right} of 4 answers are correct (green). Use the graph and a pencil to work out the others.`, 'bad');
+        ER.say(fb, `${right} of ${Q.length} answers are correct (green). Use the graph and a pencil to work out the others.`, 'bad');
       }
     });
 

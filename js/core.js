@@ -189,6 +189,99 @@
     return { deselect: () => select(null) };
   };
 
+  /*
+   * Drag cards into labelled slots, then press Check.
+   * Right cards lock in; wrong ones bounce back to the tray.
+   * slots: [{label, accept}]  cards: [{id, content}]  layout: 'list' | 'row'
+   */
+  ER.matchTask = function ({ slots, cards, layout = 'list', checkText = '✔ Check my answer', onSolved }) {
+    const el = ER.el;
+    const drops = [];
+    const board = el('div', { class: 'mt-board mt-' + layout });
+    slots.forEach((s) => {
+      const drop = el('div', { class: 'mt-drop', 'data-accept': s.accept });
+      drops.push(drop);
+      board.append(el('div', { class: 'mt-slot' }, el('div', { class: 'mt-label' }, s.label), drop));
+    });
+    const tray = el('div', { class: 'tray mt-tray' });
+    const cardEls = ER.shuffle(cards).map((c) => {
+      const n = el('button', { class: 'mt-card', 'data-id': c.id }, c.content);
+      tray.append(n);
+      return n;
+    });
+    const fb = el('p', { class: 'feedback', 'aria-live': 'polite' });
+    const btn = el('button', { class: 'btn btn-sun btn-big' }, checkText);
+    ER.dnd({
+      pieces: cardEls, zones: drops, tray,
+      onDrop(card, zone) {
+        ER.sfx.tap();
+        if (!zone) { tray.append(card); return; }
+        if (zone.classList.contains('locked')) return;
+        const existing = zone.querySelector('.mt-card');
+        if (existing && existing !== card) tray.append(existing);
+        zone.append(card);
+        fb.textContent = '';
+      },
+    });
+    btn.addEventListener('click', () => {
+      const empty = drops.filter((d) => !d.querySelector('.mt-card')).length;
+      if (empty) { ER.sfx.bad(); ER.say(fb, `Fill every space first (${empty} still empty).`, 'bad'); return; }
+      let wrong = 0;
+      drops.forEach((d) => {
+        if (d.classList.contains('locked')) return;
+        const c = d.querySelector('.mt-card');
+        if (c.dataset.id === d.dataset.accept) { d.classList.add('locked'); c.classList.add('locked'); }
+        else { wrong++; tray.append(c); ER.shake(c); }
+      });
+      if (!wrong) {
+        btn.hidden = true;
+        tray.hidden = true;
+        ER.sfx.good();
+        ER.say(fb, '✅ All correct!', 'good');
+        if (onSolved) onSolved();
+      } else {
+        ER.sfx.bad();
+        ER.say(fb, `${drops.length - wrong} correct and locked in 🔒. ${wrong} went back to the tray. Try again!`, 'bad');
+      }
+    });
+    return el('div', { class: 'match-task' }, board, tray, el('div', { class: 'row-center' }, btn), fb);
+  };
+
+  // Multiple-choice questions shown one at a time. questions: [{q, opts, a, why}]
+  ER.quizSeq = function (questions, onDone, title = '🧠 Question') {
+    const el = ER.el;
+    const box = el('div', { class: 'card quiz' });
+    let i = 0;
+    const render = () => {
+      box.innerHTML = '';
+      const q = questions[i];
+      const qfb = el('p', { class: 'feedback' });
+      box.append(
+        el('h4', {}, `${title} ${i + 1} of ${questions.length}`),
+        el('p', {}, q.q),
+        el('div', { class: 'quiz-opts' }, ER.shuffle(q.opts).map((o) => el('button', {
+          class: 'btn quiz-opt',
+          onclick: (e) => {
+            if (o === q.a) {
+              e.currentTarget.classList.add('right');
+              box.querySelectorAll('.quiz-opt').forEach((b) => (b.disabled = true));
+              ER.sfx.good();
+              i++;
+              if (i < questions.length) { ER.say(qfb, '✅ Correct!', 'good'); setTimeout(render, 900); }
+              else { ER.say(qfb, '🎉 Correct!', 'good'); if (onDone) onDone(); }
+            } else {
+              ER.sfx.bad();
+              e.currentTarget.classList.add('wrong');
+              ER.say(qfb, 'Not quite. ' + (q.why || 'Read the question again carefully.'), 'bad');
+            }
+          },
+        }, o))),
+        qfb);
+    };
+    render();
+    return box;
+  };
+
   // Fit a fixed-size canvas's CSS size and map pointer events to canvas coords.
   ER.canvasPoint = function (canvas, e) {
     const r = canvas.getBoundingClientRect();

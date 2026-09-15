@@ -1,4 +1,4 @@
-/* Puzzle: Who Am I? Logic Grid (pencil & paper) - sirenian/cetacean diet, habitat, threats. */
+/* Puzzle: Who Am I? Logic Grid (pencil & paper) - diet, habitat and threats of 6 marine mammals. */
 ER.register({
   id: 'logic',
   title: 'Who Am I? Logic Grid',
@@ -7,10 +7,10 @@ ER.register({
   tagline: 'Use the clues to match each animal to its food, home and threat',
   code: { letter: 'P', number: 2 },
   printable: true,
-  fact: 'Dugongs and manatees are sirenians, the only marine mammals that eat just plants. Their closest living relatives on land are elephants!',
+  fact: 'Marine mammals are not one family. They include cetaceans (whales and dolphins), sirenians (dugongs and manatees), pinnipeds (seals and sea lions), and even sea otters and polar bears. All of them breathe air and feed their young milk.',
   hints: [
-    'Start with clue 2. It tells you exactly what the humpback eats. Put a ✓ in that square, then put ✗ in every other square in that row AND that column.',
-    'Clue 1 says dugongs and manatees only eat plants, so the seal-eater must be the orca. Clue 5 says the dugong is never in rivers, and clue 6 says it never goes to Antarctica. So where does the dugong live?',
+    'Start with the clues that name one animal and one thing, like the humpback\'s food or the orca\'s home. Put a ✓ in that square, then fill the rest of that row AND column with ✗. Clues that link two things (for example a food and a home) help you later.',
+    'The orca lives in every ocean, so it cannot be the penguin-eater that lives on sea ice. So the orca must eat seals, and the penguin-eater must be the leopard seal. Then use the dugong clue to rule out every home except one.',
   ],
   build(body, api) {
     const { el, sfx } = ER;
@@ -19,32 +19,39 @@ ER.register({
       { id: 'humpback', name: 'Humpback whale', art: ER.art.humpback },
       { id: 'orca', name: 'Orca', art: ER.art.orca },
       { id: 'manatee', name: 'Manatee', art: ER.art.manatee },
+      { id: 'leopard', name: 'Leopard seal', art: ER.art.leopardSeal },
+      { id: 'otter', name: 'Sea otter', art: ER.art.seaOtter },
     ];
     const CATS = [
-      { id: 'diet', title: '🍽️ Main food', opts: ['Krill', 'Freshwater plants', 'Seagrass', 'Seals'] },
-      { id: 'home', title: '🗺️ Home', opts: ['Every ocean', 'Queensland coast', 'Florida rivers', 'Antarctica ↔ Queensland'] },
-      { id: 'threat', title: '⚠️ Biggest threat', opts: ['Boat strikes', 'Toxic chemicals', 'Fishing gear', 'Seagrass loss'] },
+      { id: 'diet', title: '🍽️ Main food', opts: ['Krill', 'Penguins', 'Freshwater plants', 'Sea urchins', 'Seagrass', 'Seals'] },
+      { id: 'home', title: '🗺️ Home', opts: ['Every ocean', 'Cold kelp forests', 'Queensland coast', 'Antarctic sea ice', 'Florida rivers', 'Antarctica ↔ Queensland'] },
+      { id: 'threat', title: '⚠️ Biggest threat', opts: ['Boat strikes', 'Melting sea ice', 'Toxic chemicals', 'Oil spills', 'Fishing gear', 'Seagrass loss'] },
     ];
     const SOLUTION = {
       dugong: { diet: 'Seagrass', home: 'Queensland coast', threat: 'Seagrass loss' },
       humpback: { diet: 'Krill', home: 'Antarctica ↔ Queensland', threat: 'Fishing gear' },
       orca: { diet: 'Seals', home: 'Every ocean', threat: 'Toxic chemicals' },
       manatee: { diet: 'Freshwater plants', home: 'Florida rivers', threat: 'Boat strikes' },
+      leopard: { diet: 'Penguins', home: 'Antarctic sea ice', threat: 'Melting sea ice' },
+      otter: { diet: 'Sea urchins', home: 'Cold kelp forests', threat: 'Oil spills' },
     };
+    // Checked by brute force: these 10 clues give exactly one solution.
     const CLUES = [
+      'The animal that eats penguins lives on Antarctic sea ice, so its biggest threat is that ice melting away.',
+      'Dugongs only live in warm, salty water. You will never find one in a river, in icy water or in a cold kelp forest.',
       'Sirenians (dugongs and manatees) are herbivores. They only eat plants.',
-      'The humpback whale has baleen plates to strain tiny shrimp-like animals called krill from the water.',
-      'Orcas are found in every ocean on Earth, from the icy poles to warm tropical seas.',
-      'The animal that eats seals is a top predator. Toxic chemicals from its prey build up in its body.',
-      'Dugongs only live in salty sea water. They are never found in rivers.',
-      'Both sirenians need warm water all year round, so neither of them swims to Antarctica.',
-      'The animal that lives in Florida\'s rivers eats mostly freshwater plants. It is often hit by speeding boats.',
-      'The whale that swims from Antarctica to Queensland every year often gets tangled in fishing gear.',
+      'The whale that migrates between Antarctica and Queensland often gets tangled in fishing gear.',
+      'Orcas are found in every ocean on Earth.',
+      'The animal threatened by oil spills lives in cold kelp forests.',
+      'The humpback whale has baleen plates to strain tiny shrimp-like krill from the water.',
+      'Unlike whales and seals, the sea otter has no blubber. It relies on thick fur to stay warm, so an oil spill that clogs its fur is deadly.',
+      'The top predator that eats seals has toxic chemicals building up in its body.',
+      'The animal that lives in Florida\'s rivers eats mostly freshwater plants and is often hit by speeding boats.',
     ];
 
     body.append(el('div', { class: 'card intro-card printable' },
       el('h3', { class: 'print-only' }, '🧩 Who Am I? Logic Grid'),
-      el('p', {}, '🔍 Four animals, four foods, four homes and four threats. Each one matches ', el('b', {}, 'exactly one'), ' animal. Read the clues and fill in the grids: tap a square once for ', el('b', {}, '✗ (no)'), ' and twice for ', el('b', {}, '✓ (yes)'), '.'),
+      el('p', {}, '🔍 Six animals, six foods, six homes and six threats. Each one matches ', el('b', {}, 'exactly one'), ' animal. Read the clues and fill in the grids: tap a square once for ', el('b', {}, '✗ (no)'), ' and twice for ', el('b', {}, '✓ (yes)'), '.'),
       el('div', { class: 'animal-row' }, ANIMALS.map((a) => el('div', { class: 'animal-chip' }, el('span', { html: a.art }), a.name)))));
 
     body.append(el('div', { class: 'card printable' },
@@ -75,7 +82,6 @@ ER.register({
     });
     body.append(el('div', { class: 'card printable' }, el('h4', {}, '✏️ Working grids'), grids));
 
-    // answer table
     const selects = {};
     const ans = el('table', { class: 'answer-table' });
     ans.append(el('tr', {}, el('th', {}, 'Animal'), CATS.map((c) => el('th', {}, c.title))));
@@ -92,6 +98,7 @@ ER.register({
           return el('td', {}, s);
         })));
     });
+    const TOTAL = ANIMALS.length * CATS.length;
     const fb = el('p', { class: 'feedback', 'aria-live': 'polite' });
     let tries = 0;
     const checkBtn = el('button', { class: 'btn btn-sun btn-big no-print' }, '✔ Check my answers');
@@ -102,13 +109,13 @@ ER.register({
         if (!s.value) blank++;
         if (s.value === SOLUTION[a.id][c.id]) right++;
       }));
-      if (blank) { sfx.bad(); ER.say(fb, `Fill in all 12 answers first (${blank} still blank).`, 'bad'); return; }
+      if (blank) { sfx.bad(); ER.say(fb, `Fill in all ${TOTAL} answers first (${blank} still blank).`, 'bad'); return; }
       tries++;
-      if (right === 12) {
+      if (right === TOTAL) {
         ANIMALS.forEach((a) => CATS.forEach((c) => { selects[a.id][c.id].classList.add('ok'); selects[a.id][c.id].disabled = true; }));
         checkBtn.disabled = true;
         sfx.good();
-        ER.say(fb, '🎉 All 12 correct! You are a logic legend.', 'good');
+        ER.say(fb, `🎉 All ${TOTAL} correct! You are a logic legend.`, 'good');
         api.solve();
       } else {
         sfx.bad();
@@ -118,9 +125,9 @@ ER.register({
             s.classList.toggle('ok', s.value === SOLUTION[a.id][c.id]);
             s.classList.toggle('no', s.value !== SOLUTION[a.id][c.id]);
           }));
-          ER.say(fb, `${right} of 12 correct. Correct answers are now green and wrong ones are red.`, 'bad');
+          ER.say(fb, `${right} of ${TOTAL} correct. Correct answers are now green and wrong ones are red.`, 'bad');
         } else {
-          ER.say(fb, `${right} of 12 correct. Go back to the clues and your grid, then check again.`, 'bad');
+          ER.say(fb, `${right} of ${TOTAL} correct. Go back to the clues and your grids, then check again.`, 'bad');
         }
       }
     });
