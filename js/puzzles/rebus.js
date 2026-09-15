@@ -10,7 +10,7 @@ ER.register({
   fact: 'Sirenians (dugongs and manatees) and cetaceans (whales, dolphins and porpoises) spend their whole lives in water. Seals are different: they are pinnipeds and haul out onto land or ice to rest and have pups.',
   hints: [
     'Say each picture as a word, then add (+) or take away (−) letters. Example: 🌊 is SEA, so SEA + L = SEAL. For puzzle 2, say "eight" out loud. What other word sounds the same?',
-    'The pictures are: 🐶 PUPPY, 🍲 POT, 👨 MAN, 8️⃣ EIGHT (sounds like ATE), 🤧 FLU, 🔑 KEY, 🔥 HOT, 👑 KING, 💊 PILL, 🔵 BLUE, 🐻 BEAR, 🦆 DUCK, 🎵 SONG, 🏀 BALL, 👀 SEE. Write each word down, cross out the letters you take away, and read what is left.',
+    'The pictures are: 🐶 PUPPY, 🍲 POT, 👨 MAN, 8️⃣ EIGHT (sounds like ATE), 🤧 FLU, 🔑 KEY, 🔥 HOT, 👑 KING, 💊 PILL, 🔵 BLUE, 🐻 BEAR, 🦆 DUCK, 🎵 SONG, 🏀 BALL, 🐝 BEE. Write each word down, cross out the letters you take away, and read what is left.',
   ],
   build(body, api) {
     const { el, sfx } = ER;
@@ -33,7 +33,7 @@ ER.register({
         fact: 'Blubber is a thick layer of fat under a whale\'s skin. It keeps it warm and stores energy for long migrations.' },
       { answer: 'DUGONG', parts: [['pic', '🦆'], ['op', '−'], ['txt', 'CK'], ['op', '+'], ['txt', 'G'], ['op', '+'], ['pic', '🎵'], ['op', '−'], ['txt', 'S']],
         fact: 'Dugongs graze on seagrass like underwater cows and can live for 70 years.' },
-      { answer: 'BALEEN', parts: [['pic', '🏀'], ['op', '−'], ['txt', 'L'], ['op', '+'], ['pic', '👀'], ['op', '+'], ['txt', 'N'], ['op', '−'], ['txt', 'S']],
+      { answer: 'BALEEN', parts: [['pic', '🏀'], ['op', '−'], ['txt', 'L'], ['op', '+'], ['pic', '🐝'], ['op', '−'], ['txt', 'B'], ['op', '+'], ['txt', 'N']],
         fact: 'Baleen plates are made of keratin, the same stuff as your fingernails. Baleen whales use them to filter krill from the water.' },
     ];
 
