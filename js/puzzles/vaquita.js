@@ -30,7 +30,7 @@ ER.register({
       const x = L + i * bw + bw * 0.18, w = bw * 0.64, y = T + plotH - h;
       const col = v > 200 ? '#19c3e6' : v > 50 ? '#ffb627' : '#ff5d73';
       s += `<rect x="${x}" y="${y}" width="${w}" height="${Math.max(h, 2)}" rx="6" fill="${col}"/>`;
-      s += `<text x="${x + w / 2}" y="${y - 8}" text-anchor="middle" font-size="17" font-weight="700" fill="#10204a">${yr === 2023 ? '~10' : v}</text>`;
+      s += `<text x="${x + w / 2}" y="${y - 8}" text-anchor="middle" font-size="17" font-weight="700" fill="#10204a">${v}</text>`;
       s += `<text x="${x + w / 2}" y="${VH - B + 24}" text-anchor="middle" font-size="15" font-weight="600" fill="#10204a">${yr}</text>`;
     });
     s += `<line x1="${L}" x2="${L}" y1="${T}" y2="${T + plotH}" stroke="#10204a" stroke-width="2"/><line x1="${L}" x2="${VW - R}" y1="${T + plotH}" y2="${T + plotH}" stroke="#10204a" stroke-width="2"/>`;
